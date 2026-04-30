@@ -35,10 +35,10 @@ export default function Header({ totalAll, totalFiltered }) {
         >
           <Box sx={{ textAlign: "right" }}>
             <Typography component="span" variant="h5" sx={{ fontWeight: 800, color: colors.amber400 }}>
-              {totalFiltered.toLocaleString()}
+              {(totalFiltered || 0).toLocaleString()}
             </Typography>
             <Typography component="span" variant="caption" sx={{ ...monoTextSx, color: colors.slate500, ml: 1 }}>
-              / {totalAll} records
+              / {totalAll || 0} records
             </Typography>
           </Box>
           {/* <Box sx={{ width: 1, height: 32, bgcolor: colors.ink600 }} /> */}

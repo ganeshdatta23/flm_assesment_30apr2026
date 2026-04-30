@@ -58,17 +58,25 @@ app.use(express.json());
 // Main Data Endpoint
 app.get("/api/records", async (req, res, next) => {
   try {
-    const { country, region, year, search, page = 1, limit = 20 } = req.query;
+    const { country, region, year, section, search, sortBy, page = 1, limit = 20 } = req.query;
     const collection = await getCollection();
     
     const match = {};
     if (country && country !== "All") match.Country = country;
     if (region && region !== "All") match.CDP_Region = region;
+    if (section && section !== "All") match.Section = section;
     if (year && year !== "All") {
       const parsedYear = Number(year);
       if (!isNaN(parsedYear)) match.Year_Reported_to_CDP = parsedYear;
     }
     if (search) match.$text = { $search: search };
+
+    // Sorting logic
+    let sort = { Year_Reported_to_CDP: -1, _id: -1 };
+    if (sortBy === "organization_asc") sort = { Organization: 1, _id: 1 };
+    else if (sortBy === "organization_desc") sort = { Organization: -1, _id: -1 };
+    else if (sortBy === "country_asc") sort = { Country: 1, Organization: 1, _id: 1 };
+    else if (sortBy === "year_asc") sort = { Year_Reported_to_CDP: 1, _id: 1 };
 
     const p = parseInt(page);
     const l = parseInt(limit);
@@ -76,7 +84,7 @@ app.get("/api/records", async (req, res, next) => {
 
     const [total, items] = await Promise.all([
       collection.countDocuments(match),
-      collection.find(match).skip(skip).limit(l).toArray()
+      collection.find(match).sort(sort).skip(skip).limit(l).toArray()
     ]);
 
     res.json({
@@ -95,12 +103,20 @@ app.get("/api/records", async (req, res, next) => {
 app.get("/api/records/options", async (req, res, next) => {
   try {
     const collection = await getCollection();
-    const [countries, regions, years, sections, totalCount] = await Promise.all([
+    const [countries, regions, years, sections, totalCount, topCountries] = await Promise.all([
       collection.distinct("Country"),
       collection.distinct("CDP_Region"),
       collection.distinct("Year_Reported_to_CDP"),
       collection.distinct("Section"),
       collection.countDocuments(),
+      collection
+        .aggregate([
+          { $match: { Country: { $nin: [null, ""] } } },
+          { $group: { _id: "$Country", count: { $sum: 1 } } },
+          { $sort: { count: -1, _id: 1 } },
+          { $limit: 8 },
+        ])
+        .toArray(),
     ]);
 
     res.json({
@@ -109,6 +125,10 @@ app.get("/api/records/options", async (req, res, next) => {
       years: years.filter(Boolean).sort((a, b) => b - a),
       sections: sections.filter(Boolean).sort(),
       totalCount,
+      topCountries: topCountries.map((item) => ({
+        country: item._id,
+        count: item.count,
+      })),
     });
   } catch (err) {
     next(err);

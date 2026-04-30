@@ -10,7 +10,11 @@ import {
 } from "../styles/statsBarStyles";
 import { colors } from "../styles/theme";
 
-export default function StatsBar({ topCountries, selectedCountry, handleCountry }) {
+export default function StatsBar({ topCountries = [], selectedCountry, handleCountry }) {
+  if (!topCountries || topCountries.length === 0) {
+    return null;
+  }
+
   return (
     <Box sx={statsBarSx}>
       <Container maxWidth={false} sx={{ ...pageContainerSx, ...statsInnerSx }}>

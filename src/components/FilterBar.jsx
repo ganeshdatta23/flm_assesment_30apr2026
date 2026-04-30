@@ -90,15 +90,30 @@ export default function FilterBar({
         <Box sx={filterRowSx}>
           <TuneIcon fontSize="small" sx={{ color: colors.slate500, display: { xs: "none", sm: "block" } }} />
 
-          <FilterSelect label="All Countries" value={selectedCountry} onChange={handleCountry} options={options.countries} />
-          <FilterSelect label="All Regions" value={selectedRegion} onChange={handleRegion} options={options.regions} />
+          <FilterSelect
+            label="All Countries"
+            value={selectedCountry}
+            onChange={handleCountry}
+            options={options.countries || []}
+          />
+          <FilterSelect
+            label="All Regions"
+            value={selectedRegion}
+            onChange={handleRegion}
+            options={options.regions || []}
+          />
           <FilterSelect
             label="All Years"
             value={selectedYear}
             onChange={handleYear}
-            options={options.years.map((year) => String(year))}
+            options={(options.years || []).map((year) => String(year))}
           />
-          <FilterSelect label="All Sections" value={selectedSection} onChange={handleSection} options={options.sections} />
+          <FilterSelect
+            label="All Sections"
+            value={selectedSection}
+            onChange={handleSection}
+            options={options.sections || []}
+          />
           <FilterSelect
             value={sortBy}
             onChange={handleSort}
