@@ -1,0 +1,16 @@
+export const RECORD_FIELD_TYPES = Object.freeze({
+  id: "string",
+  organization: "string",
+  country: "string",
+  region: "string",
+  yearReported: "number | null",
+  accountNumber: "number | null",
+  parentSection: "string",
+  section: "string",
+  questionNumber: "string",
+  questionName: "string",
+  columnName: "string",
+  rowName: "string",
+  responseAnswer: "string",
+  lastUpdate: "string",
+});
