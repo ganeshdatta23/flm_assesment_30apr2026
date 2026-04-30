@@ -3,7 +3,7 @@ import express from "express";
 import cors from "cors";
 import { MongoClient } from "mongodb";
 
-// --- DATABASE LOGIC (Inlined for reliability) ---
+// --- DATABASE LOGIC ---
 let clientPromise;
 
 async function getCollection() {
@@ -16,9 +16,12 @@ async function getCollection() {
   }
 
   if (!clientPromise) {
+    // Adding options to handle potential SSL/TLS issues common in serverless environments
     const client = new MongoClient(uri, {
-      serverSelectionTimeoutMS: 5000, // 5 second timeout for DB connection
-      connectTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000, // Increase to 10s for initial connection
+      connectTimeoutMS: 10000,
+      retryWrites: false, // Disable retryable writes to simplify connection
+      tls: true, // Explicitly enable TLS
     });
     clientPromise = client.connect();
   }
@@ -27,7 +30,7 @@ async function getCollection() {
   return client.db(dbName).collection(collName);
 }
 
-// --- RECORD UTILS (Inlined) ---
+// --- RECORD UTILS ---
 function normalizeRecord(record) {
   return {
     id: String(record._id),
@@ -52,48 +55,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Logging
-app.use((req, res, next) => {
-  console.log(`[REQ] ${req.method} ${req.url}`);
-  next();
-});
-
-// Direct test
-app.get("/api/test-direct", (req, res) => {
-  res.json({ status: "ok", env: { 
-    uri: !!process.env.MONGODB_URI, 
-    db: !!process.env.MONGODB_DB, 
-    coll: !!process.env.MONGODB_COLLECTION 
-  }});
-});
-
-app.get("/api/ping", (req, res) => {
-  res.json({ message: "pong" });
-});
-
-app.get("/api/records/options", async (req, res, next) => {
-  try {
-    const collection = await getCollection();
-    const [countries, regions, years, sections, totalCount] = await Promise.all([
-      collection.distinct("Country"),
-      collection.distinct("CDP_Region"),
-      collection.distinct("Year_Reported_to_CDP"),
-      collection.distinct("Section"),
-      collection.countDocuments(),
-    ]);
-
-    res.json({
-      countries: countries.filter(Boolean).sort(),
-      regions: regions.filter(Boolean).sort(),
-      years: years.filter(Boolean).sort((a, b) => b - a),
-      sections: sections.filter(Boolean).sort(),
-      totalCount,
-    });
-  } catch (err) {
-    next(err);
-  }
-});
-
+// Main Data Endpoint
 app.get("/api/records", async (req, res, next) => {
   try {
     const { country, region, year, search, page = 1, limit = 20 } = req.query;
@@ -102,7 +64,10 @@ app.get("/api/records", async (req, res, next) => {
     const match = {};
     if (country && country !== "All") match.Country = country;
     if (region && region !== "All") match.CDP_Region = region;
-    if (year && year !== "All") match.Year_Reported_to_CDP = Number(year);
+    if (year && year !== "All") {
+      const parsedYear = Number(year);
+      if (!isNaN(parsedYear)) match.Year_Reported_to_CDP = parsedYear;
+    }
     if (search) match.$text = { $search: search };
 
     const p = parseInt(page);
@@ -126,13 +91,41 @@ app.get("/api/records", async (req, res, next) => {
   }
 });
 
+// Options Endpoint
+app.get("/api/records/options", async (req, res, next) => {
+  try {
+    const collection = await getCollection();
+    const [countries, regions, years, sections, totalCount] = await Promise.all([
+      collection.distinct("Country"),
+      collection.distinct("CDP_Region"),
+      collection.distinct("Year_Reported_to_CDP"),
+      collection.distinct("Section"),
+      collection.countDocuments(),
+    ]);
+
+    res.json({
+      countries: countries.filter(Boolean).sort(),
+      regions: regions.filter(Boolean).sort(),
+      years: years.filter(Boolean).sort((a, b) => b - a),
+      sections: sections.filter(Boolean).sort(),
+      totalCount,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/api/ping", (req, res) => {
+  res.json({ message: "pong" });
+});
+
 // Error handler
 app.use((err, req, res, next) => {
   console.error("[ERROR]", err);
   res.status(500).json({
-    message: "Function Error",
-    error: err.message,
-    stack: err.stack
+    message: "Database Connection Error",
+    details: err.message,
+    hint: "Check if your IP is whitelisted (0.0.0.0/0) in MongoDB Atlas Network Access."
   });
 });
 
