@@ -10,7 +10,7 @@ export const headerSx = {
 };
 
 export const headerInnerSx = {
-  py: 2,
+  py: { xs: 1.5, sm: 2 },
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
@@ -18,8 +18,8 @@ export const headerInnerSx = {
 };
 
 export const logoSx = {
-  width: 36,
-  height: 36,
+  width: { xs: 32, sm: 36 },
+  height: { xs: 32, sm: 36 },
   bgcolor: colors.amber400,
   color: colors.ink950,
   borderRadius: 2,

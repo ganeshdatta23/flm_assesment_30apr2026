@@ -38,12 +38,12 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: "'DM Sans', sans-serif",
-    h1: { fontFamily: "'Syne', sans-serif" },
-    h2: { fontFamily: "'Syne', sans-serif" },
-    h3: { fontFamily: "'Syne', sans-serif" },
-    h4: { fontFamily: "'Syne', sans-serif" },
-    h5: { fontFamily: "'Syne', sans-serif" },
-    h6: { fontFamily: "'Syne', sans-serif" },
+    h1: { fontFamily: "'Syne', sans-serif", fontSize: "2.5rem", "@media (max-width:600px)": { fontSize: "2rem" } },
+    h2: { fontFamily: "'Syne', sans-serif", fontSize: "2rem", "@media (max-width:600px)": { fontSize: "1.75rem" } },
+    h3: { fontFamily: "'Syne', sans-serif", fontSize: "1.75rem", "@media (max-width:600px)": { fontSize: "1.5rem" } },
+    h4: { fontFamily: "'Syne', sans-serif", fontSize: "1.5rem", "@media (max-width:600px)": { fontSize: "1.25rem" } },
+    h5: { fontFamily: "'Syne', sans-serif", fontSize: "1.25rem", "@media (max-width:600px)": { fontSize: "1.1rem" } },
+    h6: { fontFamily: "'Syne', sans-serif", fontSize: "1.1rem", "@media (max-width:600px)": { fontSize: "1rem" } },
     button: {
       textTransform: "none",
       fontWeight: 700,

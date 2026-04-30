@@ -9,7 +9,7 @@ export const appSx = {
 
 export const mainSx = {
   flex: 1,
-  py: 3,
+  py: { xs: 2, sm: 3 },
 };
 
 export const cardGridSx = {
@@ -17,10 +17,11 @@ export const cardGridSx = {
   gridTemplateColumns: {
     xs: "1fr",
     sm: "repeat(2, minmax(0, 1fr))",
+    md: "repeat(2, minmax(0, 1fr))",
     lg: "repeat(3, minmax(0, 1fr))",
     xl: "repeat(4, minmax(0, 1fr))",
   },
-  gap: 2,
+  gap: { xs: 1.5, sm: 2 },
 };
 
 export const footerSx = {

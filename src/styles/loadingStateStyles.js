@@ -1,7 +1,7 @@
 import { colors } from "./theme";
 
 export const skeletonCardSx = {
-  p: 2.5,
+  p: { xs: 2, sm: 2.5 },
   bgcolor: colors.ink800,
   border: `1px solid ${colors.ink600}`,
   borderRadius: 2,

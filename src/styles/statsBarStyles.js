@@ -7,7 +7,7 @@ export const statsBarSx = {
 };
 
 export const statsInnerSx = {
-  py: 1.5,
+  py: { xs: 1.25, sm: 1.5 },
   display: "flex",
   alignItems: "center",
   gap: 1,

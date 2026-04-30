@@ -29,25 +29,18 @@ export default function Header({ totalAll, totalFiltered }) {
 
         <Stack
           direction="row"
-          spacing={3}
+          spacing={{ xs: 1.5, sm: 3 }}
           alignItems="center"
-          sx={{ display: { xs: "none", sm: "flex" } }}
         >
           <Box sx={{ textAlign: "right" }}>
-            <Typography component="span" variant="h5" sx={{ fontWeight: 800, color: colors.amber400 }}>
+            <Typography component="span" variant={{ xs: "subtitle1", sm: "h5" }} sx={{ fontWeight: 800, color: colors.amber400 }}>
               {(totalFiltered || 0).toLocaleString()}
             </Typography>
-            <Typography component="span" variant="caption" sx={{ ...monoTextSx, color: colors.slate500, ml: 1 }}>
-              / {totalAll || 0} records
+            <Typography component="span" variant="caption" sx={{ ...monoTextSx, color: colors.slate500, ml: { xs: 0.5, sm: 1 } }}>
+              <Box component="span" sx={{ display: { xs: "none", sm: "inline" } }}>/ </Box>
+              {totalAll || 0}
             </Typography>
           </Box>
-          {/* <Box sx={{ width: 1, height: 32, bgcolor: colors.ink600 }} /> */}
-          <Stack direction="row" spacing={1} alignItems="center">
-            {/* <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#4ADE80" }} /> */}
-            {/* <Typography variant="caption" sx={{ ...monoTextSx, color: colors.slate400 }}>
-              MongoDB
-            </Typography> */}
-          </Stack>
         </Stack>
       </Container>
     </Box>

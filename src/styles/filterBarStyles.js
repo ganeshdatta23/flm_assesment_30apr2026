@@ -6,25 +6,26 @@ export const filterBarSx = {
 };
 
 export const filterInnerSx = {
-  py: 2,
+  py: { xs: 1.5, sm: 2 },
   display: "grid",
-  gap: 1.5,
+  gap: { xs: 1, sm: 1.5 },
 };
 
 export const filterRowSx = {
   display: "flex",
   alignItems: "center",
-  gap: 1.5,
+  gap: { xs: 1, sm: 1.5 },
   flexWrap: "wrap",
 };
 
 export const searchSx = {
-  flex: "1 1 320px",
-  maxWidth: 560,
+  flex: { xs: "1 1 100%", sm: "1 1 320px" },
+  maxWidth: { xs: "100%", sm: 560 },
 };
 
 export const selectSx = {
-  minWidth: 150,
+  flex: { xs: "1 1 calc(50% - 8px)", sm: "0 1 150px" },
+  minWidth: { xs: "0", sm: 150 },
 };
 
 export const viewToggleSx = {
