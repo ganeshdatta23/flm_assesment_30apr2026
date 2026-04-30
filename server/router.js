@@ -9,6 +9,10 @@ import {
 
 const router = Router();
 
+router.get("/ping", (_request, response) => {
+  response.json({ message: "pong", timestamp: new Date().toISOString() });
+});
+
 router.get("/health", async (_request, response) => {
   try {
     const collection = await getCollection();
