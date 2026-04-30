@@ -1,16 +1,17 @@
 import "dotenv/config";
-import cors from "cors";
+import serverless from "serverless-http";
 import express from "express";
-import { router } from "./router.js";
+import cors from "cors";
+import { router } from "../../server/router.js";
 
 const app = express();
-const port = Number.parseInt(process.env.PORT || "4000", 10);
 
 app.use(cors());
 app.use(express.json());
 
-// Mount the router at /api for local development
+// Support both /api/records and /records (depending on how Netlify passes the path)
 app.use("/api", router);
+app.use("/", router);
 
 app.use((error, _request, response, _next) => {
   response.status(500).json({
@@ -18,6 +19,4 @@ app.use((error, _request, response, _next) => {
   });
 });
 
-app.listen(port, () => {
-  console.log(`API listening on http://localhost:${port}`);
-});
+export const handler = serverless(app);
