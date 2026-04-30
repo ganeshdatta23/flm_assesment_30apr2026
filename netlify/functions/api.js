@@ -9,18 +9,21 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Match the path that Netlify redirects to: /.netlify/functions/api/...
-// The :splat in netlify.toml will pass the remaining path here.
-app.use("/.netlify/functions/api", router);
+// Middleware to log requests for debugging in Netlify Function Logs
+app.use((req, res, next) => {
+  console.log(`Incoming request: ${req.method} ${req.url}`);
+  next();
+});
 
-// Fallback for different environments or direct calls
-app.use("/api", router);
+// Use the router for all paths. 
+// The netlify.toml redirect will handle the /api prefix.
+app.use("/", router);
 
 app.use((error, _request, response, _next) => {
   console.error("Function Error:", error);
   response.status(500).json({
     message: error.message || "Something went wrong while loading records.",
-    stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
+    error: process.env.NODE_ENV === "development" ? error.stack : "Internal Server Error",
   });
 });
 
