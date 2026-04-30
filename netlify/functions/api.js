@@ -9,21 +9,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Middleware to log requests for debugging in Netlify Function Logs
-app.use((req, res, next) => {
-  console.log(`Incoming request: ${req.method} ${req.url}`);
-  next();
-});
-
-// Use the router for all paths. 
-// The netlify.toml redirect will handle the /api prefix.
+// This ensures that whether the path is /api/ping, /ping, or /.netlify/functions/api/ping, it works.
+app.use("/.netlify/functions/api", router);
+app.use("/api", router);
 app.use("/", router);
 
 app.use((error, _request, response, _next) => {
   console.error("Function Error:", error);
   response.status(500).json({
-    message: error.message || "Something went wrong while loading records.",
-    error: process.env.NODE_ENV === "development" ? error.stack : "Internal Server Error",
+    message: error.message || "Something went wrong.",
+    error: error.message
   });
 });
 
